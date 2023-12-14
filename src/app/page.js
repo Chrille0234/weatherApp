@@ -1,6 +1,10 @@
 "use client"
-import LocationAndCurrentWeather from "@/app/components/locationCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
+import homeBackground from "./assets/homeBackground.png"
+import house from "./assets/house.png"
+import TabBar from "./assets/TabBar.png"
+import WeatherWidget from "@/app/widgets/cityAndWeather/cityAndWeather"
+import Image from "next/image";
 
 export default function Home() {
     const apiKey = "371a743ceb6e25bf13659a362ab6c511";
@@ -22,13 +26,17 @@ export default function Home() {
                     const data = await response.json();
 
                     if (isMounted) {
+                        console.log(data)
                         setLocationAndWeather({
                             city: data.city.name,
                             celsius: Math.round(data.list[0].main.temp - 273.15), // converts kelvin to celsius
+                            clouds: data.list[0].weather[0].description,
+                            latitude: data.city.coord.lat,
+                            longtitude: data.city.coord.lon
                         });
                     }
                 } catch (error) {
-                    console.error('Error fetching data:', error);
+                    console.error('der var en fejl fordi du er en klovn:', error);
                 }
             },
             (error) => {
@@ -44,9 +52,24 @@ export default function Home() {
     console.log(locationAndWeather);
 
     return (
-        <LocationAndCurrentWeather
-            city={locationAndWeather.city}
-            degrees={locationAndWeather.celsius}
-        />
+        <div className="w-full h-[100dvh] bg-[url('./assets/homeBackground.png')] bg-no-repeat bg-cover">
+            <WeatherWidget object={locationAndWeather}/>
+            <Image src={house} alt={"house at night"} className="absolute bottom-0"/>
+            <Image src={TabBar} alt={"house at night"} className="absolute bottom-0"/>
+        </div>
     );
 }
+
+/*{w
+  "id": 2614481,
+  "name": "Roskilde",
+  "coord": {
+    "lat": 55.6258,
+    "lon": 12.0864
+  },
+  "country": "DK",
+  "population": 44285,
+  "timezone": 3600,
+  "sunrise": 1702539191,
+  "sunset": 1702564751
+}*/
