@@ -7,7 +7,7 @@ import WeatherWidget from "@/app/widgets/cityAndWeather/cityAndWeather"
 import Image from "next/image";
 
 export default function Home() {
-    const apiKey = "371a743ceb6e25bf13659a362ab6c511";
+    const apiKey = "";
     const [locationAndWeather, setLocationAndWeather] = useState({});
 
     useEffect(() => {
