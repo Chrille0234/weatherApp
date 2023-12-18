@@ -5,9 +5,10 @@ import house from "./assets/house.png"
 import TabBar from "./assets/TabBar.png"
 import WeatherWidget from "@/app/widgets/cityAndWeather/cityAndWeather"
 import Image from "next/image";
+import toCelsius from "@/app/function-components/toCelsius";
 
 export default function Home() {
-    const apiKey = "";
+    const apiKey = "371a743ceb6e25bf13659a362ab6c511";
     const [locationAndWeather, setLocationAndWeather] = useState({});
 
     useEffect(() => {
@@ -29,7 +30,9 @@ export default function Home() {
                         console.log(data)
                         setLocationAndWeather({
                             city: data.city.name,
-                            celsius: Math.round(data.list[0].main.temp - 273.15), // converts kelvin to celsius
+                            celsius: Math.round(toCelsius("kelvin", data.list[0].main.temp)), // converts kelvin to celsius
+                            minTemp: Math.round(toCelsius("kelvin", data.list[0].main.temp_min)), // converts minimum temperature from kelvin to celsius
+                            maxTemp: Math.round(toCelsius("kelvin", data.list[0].main.temp_max)), // converts maximum temperature from kelvin to celsius
                             clouds: data.list[0].weather[0].description,
                             latitude: data.city.coord.lat,
                             longtitude: data.city.coord.lon
