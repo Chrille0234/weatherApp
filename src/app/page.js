@@ -1,33 +1,39 @@
 "use client"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import homeBackground from "./assets/homeBackground.png"
 import house from "./assets/house.png"
-import TabBar from "./assets/TabBar.png"
+import frontBar from "./assets/tabbar/frontBar.svg"
+import backBar from "./assets/tabbar/backBar.svg"
+import plusButton from "./assets/tabbar/plusButton.svg"
+import pinButton from "./assets/tabbar/pinButton.svg"
+import menuButton from "./assets/tabbar/menuButton.svg"
+
 import WeatherWidget from "@/app/widgets/cityAndWeather/cityAndWeather"
-import Image from "next/image";
-import toCelsius from "@/app/function-components/toCelsius";
+import toCelsius from "@/app/function-components/toCelsius"
 
 export default function Home() {
-    const apiKey = "371a743ceb6e25bf13659a362ab6c511";
+    const apiKey = "371a743ceb6e25bf13659a362ab6c511"
     const [locationAndWeather, setLocationAndWeather] = useState({});
 
     useEffect(() => {
-        //checks if useEffect is running or whatever, so it can't run multiple timess
-        let isMounted = true;
+        let isMounted = true
 
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                let lat = position.coords.latitude;
-                let lon = position.coords.longitude;
+                let lat = position.coords.latitude
+                let lon = position.coords.longitude
 
-                const endpoint = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+                const endpoint = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`
 
                 try {
-                    const response = await fetch(endpoint);
-                    const data = await response.json();
+                    const response = await fetch(endpoint)
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`)
+                    }
+                    const data = await response.json()
 
                     if (isMounted) {
-                        console.log(data)
                         setLocationAndWeather({
                             city: data.city.name,
                             celsius: Math.round(toCelsius("kelvin", data.list[0].main.temp)), // converts kelvin to celsius
@@ -36,43 +42,42 @@ export default function Home() {
                             clouds: data.list[0].weather[0].description,
                             latitude: data.city.coord.lat,
                             longtitude: data.city.coord.lon
-                        });
+                        })
                     }
                 } catch (error) {
-                    console.error('der var en fejl fordi du er en klovn:', error);
+                    console.error('An error occurred while fetching the weather data:', error)
                 }
             },
             (error) => {
-                console.error(`der var en fejl fordi du er en klovn: ${error.message}`);
+                console.error('An error occurred while fetching the weather data:', error)
             }
-        );
+        )
 
         return () => {
-            isMounted = false;
-        };
-    }, []);
+            isMounted = false
+        }
+    }, [])
 
-    console.log(locationAndWeather);
+    console.log(locationAndWeather)
 
     return (
         <div className="w-full h-[100dvh] bg-[url('./assets/homeBackground.png')] bg-no-repeat bg-cover">
             <WeatherWidget object={locationAndWeather}/>
-            <Image src={house} alt={"house at night"} className="absolute bottom-0"/>
-            <Image src={TabBar} alt={"house at night"} className="absolute bottom-0"/>
+            <div className="absolute bottom-0">
+                <Image src={backBar} alt={"house at night"} className="absolute bottom-0 min-w-[100dvw]"/>
+                <Image src={frontBar} alt={"house at night"} className="absolute bottom-0 min-w-[100dvw]"/>
+                <div className="flex justify-between w-[100dvw]  relative">
+                    <button>
+                        <Image src={pinButton} alt={"open menu"} height="75"/>
+                    </button>
+                    <button className={"relative top-1"}>
+                        <Image src={plusButton} alt={"open menu"} height="75"/>
+                    </button>
+                    <button>
+                        <Image src={menuButton} alt={"open menu"} height="75"/>
+                    </button>
+                </div>
+            </div>
         </div>
-    );
+    )
 }
-
-/*{w
-  "id": 2614481,
-  "name": "Roskilde",
-  "coord": {
-    "lat": 55.6258,
-    "lon": 12.0864
-  },
-  "country": "DK",
-  "population": 44285,
-  "timezone": 3600,
-  "sunrise": 1702539191,
-  "sunset": 1702564751
-}*/
